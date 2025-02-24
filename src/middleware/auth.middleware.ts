@@ -32,10 +32,13 @@ export const verify_JWT=async(req:AuthRequest,res:Response,next:NextFunction)=>{
                 req.user=user;
                 //console.log("User "+user)
                 next();
+        }else{
+             res.status(400).json(new ApiError(401, "Unauthenticated"));
+            //throw new ApiError(401,"Unauthenticated");
         }
        
         
     } catch (error:any) {
-        new ApiError(401,error);
+        throw new ApiError(401,error);
         }
 }

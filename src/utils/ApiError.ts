@@ -1,5 +1,6 @@
 class ApiError extends Error {
     public statusCode: number;
+   
     public data: null | any;
     public errors: any[];
     public success: boolean;
