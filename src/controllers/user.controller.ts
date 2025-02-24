@@ -109,19 +109,34 @@ export const getAllUsers = async (req: Request, res: Response) => {
   }
 
 }
-export const getUser= async(req:Request<{id:string}>,res:Response)=>{
+export const getUser = async (req: Request<{ id: string }>, res: Response) => {
 
-try{
-  const user=await User.findById({_id:req.query.id}).select("-password -refreshToken");
-  if(!user){
-    res.status(200).json(new ApiResponse(200,false,"User Not found"));
-  }else{
-    res.status(200).json(new ApiResponse(200,true,"User found",user));
+  try {
+    const user = await User.findById({ _id: req.query.id }).select("-password -refreshToken");
+    if (!user) {
+      res.status(200).json(new ApiResponse(200, false, "User Not found"));
+    } else {
+      res.status(200).json(new ApiResponse(200, true, "User found", user));
+    }
+
+  } catch (error: any) {
+    res.status(400).json(new ApiResponse(400, false, error));
   }
- 
-}catch(error:any){
-  res.status(400).json(new ApiResponse(400,false,error));
 }
+export const deleteUser = async (req: Request<{ id: string }>, res: Response) => {
+  try {
+    const user = await User.deleteOne({ _id: req.query.id });
+    if (user.deletedCount === 0) {
+      res.status(200).json(new ApiResponse(200, false, "User Not found"));
+    } else {
+      res.status(200).json(new ApiResponse(200, true, "User deleted successfully"));
+    }
+
+  } catch (error: any) {
+    res.status(400).json(new ApiResponse(400, false, error));
+
+  }
+
 }
 
 export const logout = async (req: AuthRequest, res: Response) => {
