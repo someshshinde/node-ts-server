@@ -84,7 +84,7 @@ export const changePassword:RequestHandler=async(req:AuthRequest,res:Response,ne
       throw new ApiError(404, "User not found");
     }
     const isMatch = await user.compairPassword(oldPassword);
-    console.log(isMatch);
+    //console.log(isMatch);
     if(!isMatch){
       throw new ApiError(400,"Invalid Password")
     }
@@ -93,6 +93,17 @@ export const changePassword:RequestHandler=async(req:AuthRequest,res:Response,ne
     await user.save({ validateBeforeSave: false });
    res.status(200).json(new ApiResponse(200,true,"Password changed successfully",user));
 
+  } catch (error:any) {
+    res.status(400).json(new ApiResponse(400, false, error));
+  }
+
+}
+
+export const getAllUsers= async(req:Request,res:Response)=>{
+  try {
+    const user=await User.find().select("-password -refreshToken");
+    res.status(200).json(new ApiResponse(200,true,"All users",user));
+    
   } catch (error:any) {
     res.status(400).json(new ApiResponse(400, false, error));
   }
