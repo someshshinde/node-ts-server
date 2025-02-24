@@ -3,13 +3,13 @@ import { userDTO } from '../dto/user.dto';
 import { ApiResponse } from '../utils/ApiResponce';
 import { ApiError } from '../utils/ApiError';
 import { User } from '../models/user.model';
+import { promises } from 'dns';
 
 interface AuthRequest extends Request {
   user?: any;
 }
-export const getUsers = (req: Request, res: Response) => {
-  res.json([{ id: 1, name: 'John Doe' }]);
-};
+
+
 
 export const createUser = async (req: Request, res: Response) => {
   try {
@@ -109,17 +109,31 @@ export const getAllUsers = async (req: Request, res: Response) => {
   }
 
 }
+export const getUser= async(req:Request<{id:string}>,res:Response)=>{
+
+try{
+  const user=await User.findById({_id:req.query.id}).select("-password -refreshToken");
+  if(!user){
+    res.status(200).json(new ApiResponse(200,false,"User Not found"));
+  }else{
+    res.status(200).json(new ApiResponse(200,true,"User found",user));
+  }
+ 
+}catch(error:any){
+  res.status(400).json(new ApiResponse(400,false,error));
+}
+}
 
 export const logout = async (req: AuthRequest, res: Response) => {
   try {
-    
-      
-      const user = await User.updateOne({ _id: req.user?._id },{refreshToken:""});
-      res.clearCookie('accessToken');
-      res.clearCookie('refreshToken');
-      res.status(200).json(new ApiResponse(200, true, "User logged out successfully",user));
 
-    
+
+    const user = await User.updateOne({ _id: req.user?._id }, { refreshToken: "" });
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+    res.status(200).json(new ApiResponse(200, true, "User logged out successfully", user));
+
+
 
   } catch (error: any) {
     throw new ApiError(500, error);
